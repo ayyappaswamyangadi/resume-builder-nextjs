@@ -1,0 +1,32 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // profile photos: users/{uid}/photo/*
+    match /users/{uid}/photo/{fileName} {
+      allow read: if true;
+      allow write: if isOwner(uid)
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches("image/.*");
+    }
+
+    // custom section/company logos: users/{uid}/logos/*
+    match /users/{uid}/logos/{fileName} {
+      allow read: if true;
+      allow write: if isOwner(uid)
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches("image/.*");
+    }
+
+    // exported PDF history: users/{uid}/exports/*
+    match /users/{uid}/exports/{fileName} {
+      allow read, write: if isOwner(uid)
+        && request.resource.size < 15 * 1024 * 1024;
+    }
+  }
+}

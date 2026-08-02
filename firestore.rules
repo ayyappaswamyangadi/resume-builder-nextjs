@@ -1,0 +1,36 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // users/{uid} - profile + app settings, one doc per account.
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // resumes/{resumeId} - one doc per resume, embeds sections + customization
+    // (kept well under the 1MB doc limit) to avoid subcollection read fan-out.
+    match /resumes/{resumeId} {
+      allow read, update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow create: if isSignedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() < 200
+        && request.resource.data.templateId is string;
+    }
+
+    // templates/{templateId} - seeded read-only registry metadata, no client writes.
+    match /templates/{templateId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
