@@ -25,7 +25,7 @@ export function CreativeDesignerDocument({ data, sectionOrder, customization, sh
         <View style={{ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: tokens.primary, padding: `${tokens.spacing.pageMargin}mm` }}>
           {showPhoto && <PdfProfilePhoto photoUrl={personal.photoUrl} fullName={personal.fullName} size={76} backgroundColor={tokens.accent} />}
           <View>
-            <Text style={{ fontSize: tokens.size.xxl, fontWeight: 700, color: "#ffffff" }}>{personal.fullName || "Your Name"}</Text>
+            <Text style={{ fontSize: tokens.size.xxl, lineHeight: 1.2, fontWeight: 700, color: "#ffffff" }}>{personal.fullName || "Your Name"}</Text>
             {personal.role && <Text style={{ fontSize: tokens.size.lg, color: tokens.accent }}>{personal.role}</Text>}
           </View>
         </View>
@@ -34,7 +34,7 @@ export function CreativeDesignerDocument({ data, sectionOrder, customization, sh
           <View style={{ width: "32%", backgroundColor: tokens.accent, padding: `${tokens.spacing.pageMargin}mm ${tokens.spacing.pageMargin * 0.7}mm` }}>
             <PdfContactField icon="mail" value={personal.email} tokens={tokens} color="#ffffff" />
             <PdfContactField icon="phone" value={personal.phone} tokens={tokens} color="#ffffff" />
-            <PdfContactField icon="globe" value={personal.website} tokens={tokens} color="#ffffff" />
+            <PdfContactField icon="globe" value={personal.portfolio} tokens={tokens} color="#ffffff" />
             <PdfContactField icon="linkedin" value={personal.linkedin} tokens={tokens} color="#ffffff" />
             <PdfContactField icon="github" value={personal.github} tokens={tokens} color="#ffffff" />
             <View style={{ marginTop: 12 }}>

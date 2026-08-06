@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, UserRound } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { AuthShell } from "@/components/auth/AuthShell"
 import { GoogleIcon } from "@/components/shared/GoogleIcon"
 import { Button } from "@/components/ui/button"
@@ -17,11 +17,11 @@ import { loginSchema, type LoginFormValues } from "@/lib/validation/auth"
 
 export default function LoginPage() {
   const router = useRouter()
-  const { status, error, signInWithGoogle, signInWithEmail, continueAsGuest, clearError } = useAuthStore()
-  const [isSubmitting, setIsSubmitting] = React.useState<"google" | "email" | "guest" | null>(null)
+  const { status, error, signInWithGoogle, signInWithEmail, clearError } = useAuthStore()
+  const [isSubmitting, setIsSubmitting] = React.useState<"google" | "email" | null>(null)
 
   React.useEffect(() => {
-    if (status === "authenticated" || status === "guest") router.replace("/dashboard")
+    if (status === "authenticated") router.replace("/dashboard")
   }, [status, router])
 
   const form = useForm<LoginFormValues>({
@@ -69,18 +69,6 @@ export default function LoginPage() {
             <GoogleIcon className="size-4" />
           )}
           Continue with Google
-        </Button>
-        <Button
-          variant="secondary"
-          className="w-full"
-          onClick={() => {
-            setIsSubmitting("guest")
-            continueAsGuest()
-          }}
-          disabled={isSubmitting !== null}
-        >
-          <UserRound className="size-4" aria-hidden="true" />
-          Continue as Guest
         </Button>
       </div>
 

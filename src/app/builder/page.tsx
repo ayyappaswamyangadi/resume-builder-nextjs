@@ -17,7 +17,7 @@ function BuilderContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const resumeId = searchParams.get("resumeId")
-  const { activeResume, loadResume, isLoading } = useResumeStore()
+  const { activeResume, loadResume, isResumeLoading } = useResumeStore()
   const [customizeOpen, setCustomizeOpen] = React.useState(false)
   const [mobileView, setMobileView] = React.useState<"edit" | "preview">("edit")
 
@@ -26,11 +26,11 @@ function BuilderContent() {
   }, [resumeId, loadResume])
 
   React.useEffect(() => {
-    if (!isLoading && resumeId && activeResume === null) {
+    if (!isResumeLoading && resumeId && activeResume === null) {
       const timeout = setTimeout(() => router.replace("/dashboard"), 50)
       return () => clearTimeout(timeout)
     }
-  }, [isLoading, resumeId, activeResume, router])
+  }, [isResumeLoading, resumeId, activeResume, router])
 
   if (!resumeId || !activeResume || activeResume.id !== resumeId) {
     return (

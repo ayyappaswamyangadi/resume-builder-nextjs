@@ -14,7 +14,7 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 }
 
-/** True once real Firebase project credentials are provided via env vars. Guest mode works without this. */
+/** True once real Firebase project credentials are provided via env vars. Sign-in requires this. */
 export const isFirebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId)
 
 let app: FirebaseApp | null = null

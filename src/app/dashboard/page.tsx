@@ -11,15 +11,28 @@ import { CreateResumeCard } from "@/components/dashboard/CreateResumeCard"
 import { ResumePreviewDialog } from "@/components/dashboard/ResumePreviewDialog"
 import { PromptDialog } from "@/components/shared/PromptDialog"
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useResumeStore } from "@/store/resumeStore"
 import { downloadResumePdf } from "@/lib/pdf/export"
 
 export default function DashboardPage() {
-  const { resumes, isLoading, refreshList, duplicate, remove, rename, loadResume, activeResume } = useResumeStore()
+  const {
+    resumes,
+    isLoading,
+    isResumeLoading,
+    refreshList,
+    duplicate,
+    remove,
+    rename,
+    setStatus,
+    loadResume,
+    activeResume,
+  } = useResumeStore()
 
   const [renamingId, setRenamingId] = React.useState<string | null>(null)
   const [deletingId, setDeletingId] = React.useState<string | null>(null)
   const [previewingId, setPreviewingId] = React.useState<string | null>(null)
+  const [pendingId, setPendingId] = React.useState<string | null>(null)
 
   React.useEffect(() => {
     refreshList()
@@ -31,6 +44,12 @@ export default function DashboardPage() {
   async function handlePreview(id: string) {
     setPreviewingId(id)
     await loadResume(id)
+  }
+
+  function withPending(id: string, promise: Promise<unknown>) {
+    setPendingId(id)
+    promise.finally(() => setPendingId((current) => (current === id ? null : current)))
+    return promise
   }
 
   async function handleDownload(id: string) {
@@ -59,7 +78,7 @@ export default function DashboardPage() {
         {isLoading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-48 animate-pulse rounded-xl bg-muted" />
+              <Skeleton key={i} className="h-48 rounded-xl" />
             ))}
           </div>
         ) : resumes.length === 0 ? (
@@ -81,14 +100,32 @@ export default function DashboardPage() {
                 <ResumeCard
                   key={resume.id}
                   resume={resume}
+                  isPreviewPending={previewingId === resume.id && isResumeLoading}
+                  isBusy={pendingId === resume.id}
                   onPreview={() => handlePreview(resume.id)}
-                  onDuplicate={async () => {
-                    await duplicate(resume.id)
-                    toast.success("Resume duplicated")
-                  }}
+                  onDuplicate={() =>
+                    toast.promise(withPending(resume.id, duplicate(resume.id)), {
+                      loading: "Duplicating…",
+                      success: "Resume duplicated",
+                      error: "Couldn't duplicate the resume",
+                    })
+                  }
                   onRename={() => setRenamingId(resume.id)}
                   onDelete={() => setDeletingId(resume.id)}
                   onDownload={() => handleDownload(resume.id)}
+                  onToggleStatus={() =>
+                    toast.promise(
+                      withPending(
+                        resume.id,
+                        setStatus(resume.id, resume.status === "complete" ? "draft" : "complete")
+                      ),
+                      {
+                        loading: "Updating…",
+                        success: resume.status === "complete" ? "Marked as draft" : "Marked as complete",
+                        error: "Couldn't update the resume",
+                      }
+                    )
+                  }
                 />
               ))}
             </AnimatePresence>
@@ -102,7 +139,14 @@ export default function DashboardPage() {
         title="Rename resume"
         label="Resume name"
         defaultValue={renamingResume?.title ?? ""}
-        onConfirm={(value) => renamingId && rename(renamingId, value)}
+        onConfirm={(value) =>
+          renamingId &&
+          toast.promise(withPending(renamingId, rename(renamingId, value)), {
+            loading: "Renaming…",
+            success: "Resume renamed",
+            error: "Couldn't rename the resume",
+          })
+        }
       />
 
       <ConfirmDialog
@@ -114,8 +158,11 @@ export default function DashboardPage() {
         destructive
         onConfirm={() => {
           if (deletingId) {
-            remove(deletingId)
-            toast.success("Resume deleted")
+            toast.promise(withPending(deletingId, remove(deletingId)), {
+              loading: "Deleting…",
+              success: "Resume deleted",
+              error: "Couldn't delete the resume",
+            })
           }
         }}
       />

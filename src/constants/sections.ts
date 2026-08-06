@@ -1,4 +1,4 @@
-import type { BuiltInSectionId } from "@/types/resume"
+import type { BuiltInSectionId, SectionMeta } from "@/types/resume"
 
 export const SECTION_LABELS: Record<BuiltInSectionId, string> = {
   personal: "Personal Details",
@@ -41,3 +41,12 @@ export const DEFAULT_SECTION_ORDER: BuiltInSectionId[] = [
   "hobbies",
   "references",
 ]
+
+export function createDefaultSectionOrder(): SectionMeta[] {
+  return DEFAULT_SECTION_ORDER.map((ref) => ({
+    ref,
+    label: SECTION_LABELS[ref],
+    visible: true,
+    collapsed: false,
+  }))
+}

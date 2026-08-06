@@ -3,11 +3,12 @@
 import * as React from "react"
 import Link from "next/link"
 import { motion } from "motion/react"
-import { FileText, Sparkles, LayoutTemplate, Download } from "lucide-react"
+import { CheckCircle2, FileText, Sparkles, LayoutTemplate, Download } from "lucide-react"
 
 const HIGHLIGHTS = [
-  { icon: LayoutTemplate, text: "10 professionally designed templates" },
-  { icon: Sparkles, text: "AI-assisted writing hooks, ready to wire up" },
+  { icon: CheckCircle2, text: "100% free, forever — no credit card, ever" },
+  { icon: LayoutTemplate, text: "50 professionally designed templates" },
+  { icon: Sparkles, text: "AI writing assist for summaries & bullet points" },
   { icon: Download, text: "Pixel-perfect, selectable-text PDF export" },
 ]
 
@@ -58,9 +59,6 @@ export function AuthShell({
             ))}
           </ul>
         </motion.div>
-        <p className="relative z-10 text-sm text-primary-foreground/70">
-          Free forever in guest mode — no account required.
-        </p>
       </div>
 
       <div className="flex items-center justify-center p-6 sm:p-10">

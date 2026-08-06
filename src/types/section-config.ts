@@ -10,9 +10,11 @@ export interface FieldConfig {
   options?: { value: string; label: string }[]
   /** Renders at half width, two per row, for compact fields like dates/locations. */
   half?: boolean
+  /** For "list" fields: render as per-bullet rich-text rows (add/remove, bold/italic/etc.) instead of a plain multi-line textarea. */
+  richList?: boolean
   helpText?: string
   /** Optional AI-assist hook: receives the form's current raw values, returns the new field value. */
-  ai?: { label: string; run: (values: Record<string, string | boolean>) => Promise<string | string[]> }
+  ai?: { label: string; run: (values: Record<string, string | boolean | string[]>) => Promise<string | string[]> }
 }
 
 export interface SectionConfig<T extends { id: string }> {

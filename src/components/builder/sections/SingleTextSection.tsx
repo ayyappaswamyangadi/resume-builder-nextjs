@@ -2,8 +2,9 @@
 
 import * as React from "react"
 import { Loader2, Sparkles } from "lucide-react"
-import { Textarea } from "@/components/ui/textarea"
+import { RichTextEditor } from "@/components/builder/richtext/RichTextEditor"
 import { Button } from "@/components/ui/button"
+import { useDebouncedCallback } from "@/hooks/useDebouncedCallback"
 
 export function SingleTextSection({
   value,
@@ -19,6 +20,7 @@ export function SingleTextSection({
   onAiAssist: () => Promise<string>
 }) {
   const [loading, setLoading] = React.useState(false)
+  const debouncedOnChange = useDebouncedCallback(onChange, 250)
 
   async function handleAi() {
     setLoading(true)
@@ -37,7 +39,7 @@ export function SingleTextSection({
           {aiLabel}
         </Button>
       </div>
-      <Textarea rows={5} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} />
+      <RichTextEditor value={value} onChange={debouncedOnChange} placeholder={placeholder} />
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { A4Page } from "@/components/templates/primitives/A4Page"
 import { ResumeSectionBlock } from "@/components/templates/primitives/ResumeSectionBlock"
+import { ContactInlineLine } from "@/components/templates/primitives/ContactInlineLine"
 import { resolveTokens } from "@/lib/templates/tokens"
 import type { TemplateRenderProps } from "@/types/template"
 
@@ -15,11 +16,11 @@ export function ModernAtsPreview({ data, sectionOrder, customization }: Template
           {personal.fullName || "Your Name"}
         </h1>
         {personal.role && <p className="mt-0.5 text-[var(--tpl-size-lg)]">{personal.role}</p>}
-        <p className="mt-1.5 text-[var(--tpl-size-xs)]">
-          {[personal.email, personal.phone, personal.address, personal.linkedin, personal.website]
-            .filter(Boolean)
-            .join("  |  ")}
-        </p>
+        <ContactInlineLine
+          items={[{ value: personal.email, kind: "email" }, { value: personal.phone }, { value: personal.address }, { value: personal.linkedin, kind: "linkedin" }, { value: personal.portfolio, kind: "portfolio" }]}
+          separator="  |  "
+          className="mt-1.5 text-[var(--tpl-size-xs)]"
+        />
       </header>
 
       <div className="flex flex-col" style={{ gap: tokens.spacing.section }}>

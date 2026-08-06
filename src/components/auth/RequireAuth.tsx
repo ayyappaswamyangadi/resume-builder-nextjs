@@ -10,10 +10,10 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
   React.useEffect(() => {
-    if (status === "signed-out") router.replace("/login")
+    if (status !== "authenticated" && status !== "loading") router.replace("/login")
   }, [status, router])
 
-  if (status === "loading" || status === "signed-out") {
+  if (status !== "authenticated") {
     return (
       <div className="flex min-h-screen items-center justify-center" role="status" aria-live="polite">
         <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden="true" />

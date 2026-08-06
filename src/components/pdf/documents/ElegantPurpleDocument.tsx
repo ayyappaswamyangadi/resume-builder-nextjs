@@ -21,12 +21,12 @@ export function ElegantPurpleDocument({ data, sectionOrder, customization }: Tem
     <Document>
       <Page size="A4" style={[styles.page, { padding: 0 }]}>
         <View style={{ backgroundColor: `${tokens.primary}16`, padding: `${tokens.spacing.pageMargin}mm` }}>
-          <Text style={{ fontSize: tokens.size.xxl, fontWeight: 600, color: tokens.primary }}>{personal.fullName || "Your Name"}</Text>
+          <Text style={{ fontSize: tokens.size.xxl, lineHeight: 1.2, fontWeight: 600, color: tokens.primary }}>{personal.fullName || "Your Name"}</Text>
           {personal.role && <Text style={{ fontSize: tokens.size.lg, color: tokens.muted }}>{personal.role}</Text>}
           <View style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 6 }}>
             <PdfContactField icon="mail" value={personal.email} tokens={tokens} />
             <PdfContactField icon="phone" value={personal.phone} tokens={tokens} />
-            <PdfContactField icon="globe" value={personal.website} tokens={tokens} />
+            <PdfContactField icon="globe" value={personal.portfolio} tokens={tokens} />
             <PdfContactField icon="linkedin" value={personal.linkedin} tokens={tokens} />
             <PdfContactField icon="github" value={personal.github} tokens={tokens} />
           </View>

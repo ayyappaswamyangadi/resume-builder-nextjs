@@ -46,11 +46,12 @@ export const experienceConfig: SectionConfig<ExperienceItem> = {
       name: "bullets",
       label: "Highlights (one per line)",
       type: "list",
+      richList: true,
       ai: {
         label: "Rewrite with AI",
         run: (values) =>
           rewriteExperienceBullets(
-            String(values.bullets ?? "").split("\n"),
+            Array.isArray(values.bullets) ? values.bullets : [],
             String(values.role ?? ""),
             String(values.company ?? "")
           ),

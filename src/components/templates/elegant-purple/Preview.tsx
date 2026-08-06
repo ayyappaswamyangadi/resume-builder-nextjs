@@ -29,7 +29,7 @@ export function ElegantPurplePreview({ data, sectionOrder, customization }: Temp
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[var(--tpl-size-xs)]">
           <ContactItem icon={Mail} iconStyle={tokens.iconStyle}>{personal.email}</ContactItem>
           <ContactItem icon={Phone} iconStyle={tokens.iconStyle}>{personal.phone}</ContactItem>
-          <ContactItem icon={Globe} iconStyle={tokens.iconStyle}>{personal.website}</ContactItem>
+          <ContactItem icon={Globe} iconStyle={tokens.iconStyle}>{personal.portfolio}</ContactItem>
           <ContactItem icon={LinkedinIcon} iconStyle={tokens.iconStyle}>{personal.linkedin}</ContactItem>
           <ContactItem icon={GithubIcon} iconStyle={tokens.iconStyle}>{personal.github}</ContactItem>
         </div>

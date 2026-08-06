@@ -1,6 +1,7 @@
 import { Text, View } from "@react-pdf/renderer"
 import { PdfSectionHeading } from "@/components/pdf/primitives/PdfSectionHeading"
 import { PdfBullets } from "@/components/pdf/primitives/PdfBullets"
+import { renderRichTextToPdf } from "@/components/pdf/richtext/renderRichTextToPdf"
 import { sectionHasContent } from "@/components/templates/primitives/ResumeSectionBlock"
 import { formatDateRange, formatMonthYear } from "@/lib/format"
 import type { ResolvedTokens } from "@/lib/templates/tokens"
@@ -35,8 +36,8 @@ function renderBody(meta: SectionMeta, data: ResumeData, tokens: ResolvedTokens)
   const bold = { fontWeight: 700 as const }
   const rowBetween = { flexDirection: "row" as const, justifyContent: "space-between" as const }
 
-  if (ref === "summary") return data.summary ? <Text style={small}>{data.summary}</Text> : null
-  if (ref === "objective") return data.objective ? <Text style={small}>{data.objective}</Text> : null
+  if (ref === "summary") return data.summary ? renderRichTextToPdf(data.summary, small, tokens.muted) : null
+  if (ref === "objective") return data.objective ? renderRichTextToPdf(data.objective, small, tokens.muted) : null
   if (ref === "hobbies") return data.hobbies.length ? <Text style={small}>{data.hobbies.join(" · ")}</Text> : null
 
   if (ref === "experience") {
@@ -68,7 +69,7 @@ function renderBody(meta: SectionMeta, data: ResumeData, tokens: ResolvedTokens)
         <Text style={small}>
           {[item.institution, item.location, item.grade].filter(Boolean).join(" · ")}
         </Text>
-        {item.description && <Text style={small}>{item.description}</Text>}
+        {item.description ? renderRichTextToPdf(item.description, small, tokens.muted) : null}
       </View>
     ))
   }
@@ -80,7 +81,7 @@ function renderBody(meta: SectionMeta, data: ResumeData, tokens: ResolvedTokens)
           <Text style={[small, bold]}>{item.name}</Text>
           <Text style={xsmall}>{formatDateRange(item.startDate, item.endDate)}</Text>
         </View>
-        {item.description && <Text style={small}>{item.description}</Text>}
+        {item.description ? renderRichTextToPdf(item.description, small, tokens.muted) : null}
         {item.techStack.length > 0 && <Text style={xsmall}>{item.techStack.join(" · ")}</Text>}
       </View>
     ))
@@ -106,7 +107,7 @@ function renderBody(meta: SectionMeta, data: ResumeData, tokens: ResolvedTokens)
           <Text style={[small, bold]}>{item.title}</Text>
           <Text style={xsmall}>{formatMonthYear(item.date)}</Text>
         </View>
-        {item.description && <Text style={small}>{item.description}</Text>}
+        {item.description ? renderRichTextToPdf(item.description, small, tokens.muted) : null}
       </View>
     ))
   }
@@ -131,7 +132,7 @@ function renderBody(meta: SectionMeta, data: ResumeData, tokens: ResolvedTokens)
           <Text style={xsmall}>{formatMonthYear(item.date)}</Text>
         </View>
         {item.publisher && <Text style={xsmall}>{item.publisher}</Text>}
-        {item.description && <Text style={small}>{item.description}</Text>}
+        {item.description ? renderRichTextToPdf(item.description, small, tokens.muted) : null}
       </View>
     ))
   }
@@ -145,7 +146,7 @@ function renderBody(meta: SectionMeta, data: ResumeData, tokens: ResolvedTokens)
           </Text>
           <Text style={xsmall}>{formatDateRange(item.startDate, item.endDate)}</Text>
         </View>
-        {item.description && <Text style={small}>{item.description}</Text>}
+        {item.description ? renderRichTextToPdf(item.description, small, tokens.muted) : null}
       </View>
     ))
   }
@@ -159,7 +160,7 @@ function renderBody(meta: SectionMeta, data: ResumeData, tokens: ResolvedTokens)
           </Text>
           <Text style={xsmall}>{formatDateRange(item.startDate, item.endDate)}</Text>
         </View>
-        {item.description && <Text style={small}>{item.description}</Text>}
+        {item.description ? renderRichTextToPdf(item.description, small, tokens.muted) : null}
       </View>
     ))
   }
@@ -184,7 +185,7 @@ function renderBody(meta: SectionMeta, data: ResumeData, tokens: ResolvedTokens)
           {item.date && <Text style={xsmall}>{formatMonthYear(item.date)}</Text>}
         </View>
         {item.subheading && <Text style={xsmall}>{item.subheading}</Text>}
-        {item.description && <Text style={small}>{item.description}</Text>}
+        {item.description ? renderRichTextToPdf(item.description, small, tokens.muted) : null}
       </View>
     ))
   }

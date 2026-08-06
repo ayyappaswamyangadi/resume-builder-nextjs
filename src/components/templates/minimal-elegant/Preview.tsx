@@ -1,5 +1,6 @@
 import { A4Page } from "@/components/templates/primitives/A4Page"
 import { ResumeSectionBlock } from "@/components/templates/primitives/ResumeSectionBlock"
+import { ContactInlineLine } from "@/components/templates/primitives/ContactInlineLine"
 import { resolveTokens } from "@/lib/templates/tokens"
 import type { TemplateRenderProps } from "@/types/template"
 
@@ -11,7 +12,7 @@ export function MinimalElegantPreview({ data, sectionOrder, customization }: Tem
   return (
     <A4Page tokens={tokens} style={{ padding: `${tokens.spacing.pageMargin * 1.2}mm ${tokens.spacing.pageMargin}mm` }}>
       <header className="mb-6 text-center">
-        <h1 className="text-[var(--tpl-size-xxl)] font-light tracking-wide" style={{ color: tokens.primary }}>
+        <h1 className="text-[var(--tpl-size-xxl)] font-normal tracking-wide" style={{ color: tokens.primary }}>
           {personal.fullName || "Your Name"}
         </h1>
         {personal.role && (
@@ -24,11 +25,11 @@ export function MinimalElegantPreview({ data, sectionOrder, customization }: Tem
           style={{ backgroundColor: tokens.accent }}
           aria-hidden="true"
         />
-        <p className="text-[var(--tpl-size-xs)] text-[var(--tpl-muted)]">
-          {[personal.email, personal.phone, personal.address, personal.website, personal.linkedin]
-            .filter(Boolean)
-            .join("   ·   ")}
-        </p>
+        <ContactInlineLine
+          items={[{ value: personal.email, kind: "email" }, { value: personal.phone }, { value: personal.address }, { value: personal.portfolio, kind: "portfolio" }, { value: personal.linkedin, kind: "linkedin" }]}
+          separator="   ·   "
+          className="text-[var(--tpl-size-xs)] text-[var(--tpl-muted)]"
+        />
       </header>
 
       <div className="flex flex-col" style={{ gap: tokens.spacing.section * 1.1 }}>

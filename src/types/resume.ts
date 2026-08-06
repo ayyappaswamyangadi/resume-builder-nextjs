@@ -5,7 +5,6 @@ export interface PersonalDetails {
   role: string
   email: string
   phone: string
-  website: string
   linkedin: string
   github: string
   portfolio: string
@@ -208,12 +207,55 @@ export type TemplateId =
   | "modern-green"
   | "elegant-purple"
   | "premium-portfolio"
+  | "timeline-classic"
+  | "timeline-vivid"
+  | "timeline-monochrome"
+  | "timeline-dark"
+  | "right-rail-slate"
+  | "right-rail-emerald"
+  | "right-rail-crimson"
+  | "right-rail-graphite"
+  | "duotone-blue-amber"
+  | "duotone-plum-rose"
+  | "duotone-forest-lime"
+  | "duotone-navy-gold"
+  | "compact-ats"
+  | "compact-serif"
+  | "compact-mono"
+  | "compact-color"
+  | "scholar-classic"
+  | "scholar-modern"
+  | "scholar-ivy"
+  | "scholar-research"
+  | "framed-classic"
+  | "framed-elegant"
+  | "framed-bold"
+  | "framed-minimal"
+  | "chip-teal"
+  | "chip-indigo"
+  | "chip-coral"
+  | "chip-olive"
+  | "portrait-clean"
+  | "portrait-bold"
+  | "portrait-soft"
+  | "portrait-dark"
+  | "grid-header-blue"
+  | "grid-header-charcoal"
+  | "grid-header-sage"
+  | "grid-header-rose"
+  | "linework-black"
+  | "linework-navy"
+  | "linework-brown"
+  | "linework-slate"
+
+export type ResumeStatus = "draft" | "complete"
 
 export interface Resume {
   id: string
   ownerId: string | null
   title: string
   templateId: TemplateId
+  status: ResumeStatus
   data: ResumeData
   sectionOrder: SectionMeta[]
   customization: CustomizationConfig
@@ -223,7 +265,7 @@ export interface Resume {
 
 export type ResumeSummary = Pick<
   Resume,
-  "id" | "title" | "templateId" | "updatedAt" | "createdAt"
+  "id" | "title" | "templateId" | "status" | "updatedAt" | "createdAt"
 > & {
   fullName: string
   role: string

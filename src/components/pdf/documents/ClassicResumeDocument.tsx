@@ -1,5 +1,6 @@
 import { Document, Page, Text, View } from "@react-pdf/renderer"
 import { PdfSectionContent, pdfSectionHasContent } from "@/components/pdf/primitives/PdfSectionContent"
+import { PdfContactInlineLine } from "@/components/pdf/primitives/PdfContactInlineLine"
 import { ensurePdfFontsRegistered } from "@/lib/pdf/fonts"
 import { createPdfStyles } from "@/lib/pdf/styles"
 import { resolveTokens } from "@/lib/templates/tokens"
@@ -16,11 +17,18 @@ export function ClassicResumeDocument({ data, sectionOrder, customization }: Tem
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={{ alignItems: "center", marginBottom: 10 }}>
-          <Text style={{ fontSize: tokens.size.xxl, fontWeight: 700 }}>{personal.fullName || "Your Name"}</Text>
+          <Text style={{ fontSize: tokens.size.xxl, lineHeight: 1.2, fontWeight: 700 }}>{personal.fullName || "Your Name"}</Text>
           {personal.role && <Text style={{ fontSize: tokens.size.base, fontStyle: "italic", color: tokens.muted }}>{personal.role}</Text>}
-          <Text style={[styles.xsmall, { marginTop: 3 }]}>
-            {[personal.address, personal.phone, personal.email, personal.linkedin].filter(Boolean).join(" | ")}
-          </Text>
+          <PdfContactInlineLine
+            items={[
+            { value: personal.address },
+            { value: personal.phone },
+            { value: personal.email, kind: "email" },
+            { value: personal.linkedin, kind: "linkedin" },
+          ]}
+            separator=" | "
+            style={[styles.xsmall, { marginTop: 3 }]}
+          />
         </View>
 
         {sectionOrder

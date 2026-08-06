@@ -1,8 +1,9 @@
 import { simulate } from "@/services/ai/client"
+import { toPlainText } from "@/lib/richtext/plain-text"
 
 export async function improveSummary(currentSummary: string, role: string): Promise<string> {
   return simulate(() => {
-    const base = currentSummary.trim()
+    const base = toPlainText(currentSummary).trim()
     const roleLabel = role.trim() || "professional"
     if (!base) {
       return `Results-driven ${roleLabel} with a track record of delivering measurable impact through collaboration, ownership, and continuous learning. Known for translating ambiguous problems into clear, high-quality outcomes.`
@@ -21,7 +22,7 @@ export async function generateCareerObjective(role: string): Promise<string> {
 export async function rewriteExperienceBullets(bullets: string[], role: string, company: string): Promise<string[]> {
   return simulate(() => {
     const context = [role, company].filter(Boolean).join(" at ") || "this role"
-    const source = bullets.filter((b) => b.trim().length > 0)
+    const source = bullets.map((b) => toPlainText(b).trim()).filter((b) => b.length > 0)
     if (source.length === 0) {
       return [
         `Led key initiatives as part of ${context}, driving measurable improvements in efficiency and quality.`,
@@ -29,9 +30,9 @@ export async function rewriteExperienceBullets(bullets: string[], role: string, 
       ]
     }
     return source.map((bullet) =>
-      /^(led|built|drove|improved|launched|created|managed|designed|delivered)/i.test(bullet.trim())
+      /^(led|built|drove|improved|launched|created|managed|designed|delivered)/i.test(bullet)
         ? bullet
-        : `Drove ${bullet.trim().replace(/^\w/, (c) => c.toLowerCase())}`
+        : `Drove ${bullet.replace(/^\w/, (c) => c.toLowerCase())}`
     )
   })
 }

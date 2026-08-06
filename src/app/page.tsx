@@ -4,24 +4,15 @@ import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { motion } from "motion/react"
-import {
-  ArrowRight,
-  Download,
-  FileText,
-  LayoutTemplate,
-  Palette,
-  Shield,
-  Sparkles,
-} from "lucide-react"
+import { ArrowRight, CheckCircle2, Download, FileText, LayoutTemplate, Palette, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/shared/ThemeToggle"
 import { useAuthStore } from "@/store/authStore"
 
 const FEATURES = [
   {
     icon: LayoutTemplate,
-    title: "10 designer templates",
+    title: "50 designer templates",
     description: "ATS-friendly to creative — pick a layout for any role, from fresher to executive.",
   },
   {
@@ -40,11 +31,6 @@ const FEATURES = [
     description: "A4-ready, high-resolution, selectable text — exactly what you see in the preview.",
   },
   {
-    icon: Shield,
-    title: "Guest mode, zero friction",
-    description: "Start building instantly with local-only storage. Sign in later to sync to the cloud.",
-  },
-  {
     icon: FileText,
     title: "Every section you need",
     description: "Experience, projects, publications, volunteering, custom sections — fully reorderable.",
@@ -56,7 +42,7 @@ export default function LandingPage() {
   const status = useAuthStore((s) => s.status)
 
   React.useEffect(() => {
-    if (status === "authenticated" || status === "guest") router.replace("/dashboard")
+    if (status === "authenticated") router.replace("/dashboard")
   }, [status, router])
 
   return (
@@ -85,15 +71,17 @@ export default function LandingPage() {
       <main className="flex-1">
         <section className="mx-auto max-w-4xl px-6 py-20 text-center sm:py-28">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <Badge variant="secondary" className="mb-6">
-              Free forever in guest mode
-            </Badge>
+            <span className="mb-5 inline-flex items-center gap-1.5 rounded-full border bg-muted/50 px-3 py-1 text-xs font-medium text-muted-foreground">
+              <CheckCircle2 className="size-3.5 text-emerald-500" aria-hidden="true" />
+              100% free — just sign up, no credit card, ever
+            </span>
             <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
               Build a resume that gets you hired.
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground text-balance">
-              A modern resume builder with live preview, 10 professionally designed templates, and
-              pixel-perfect PDF export. No design skills required.
+              A modern resume builder with live preview, 50 professionally designed templates, and
+              pixel-perfect PDF export. No design skills required — and every feature is free once
+              you sign up.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button size="lg" render={<Link href="/signup" />}>
@@ -130,8 +118,9 @@ export default function LandingPage() {
         <section className="mx-auto max-w-4xl px-6 py-20 text-center">
           <h2 className="text-3xl font-semibold tracking-tight">Ready in minutes, not hours.</h2>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-            Pick a template, fill in your details, and export. Your progress autosaves as you go —
-            locally as a guest, or to your account when signed in.
+            Pick a template, fill in your details, and export. Your progress autosaves to your
+            account as you go, so you never lose a half-finished resume. Just sign up — every
+            template, every feature, completely free.
           </p>
           <Button size="lg" className="mt-8" render={<Link href="/signup" />}>
             Create your resume <ArrowRight className="size-4" aria-hidden="true" />

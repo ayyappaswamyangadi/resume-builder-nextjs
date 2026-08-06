@@ -22,14 +22,14 @@ export function ProfessionalBlueDocument({ data, sectionOrder, customization }: 
     <Document>
       <Page size="A4" style={[styles.page, { padding: 0, flexDirection: "row" }]}>
         <View style={{ width: "34%", backgroundColor: tokens.primary, padding: `${tokens.spacing.pageMargin}mm ${tokens.spacing.pageMargin * 0.7}mm` }}>
-          <Text style={{ fontSize: tokens.size.xl, fontWeight: 700, color: "#ffffff" }}>{personal.fullName || "Your Name"}</Text>
+          <Text style={{ fontSize: tokens.size.xl, lineHeight: 1.2, fontWeight: 700, color: "#ffffff" }}>{personal.fullName || "Your Name"}</Text>
           {personal.role && <Text style={{ fontSize: tokens.size.sm, color: "rgba(255,255,255,0.85)", marginTop: 2 }}>{personal.role}</Text>}
 
           <View style={{ marginTop: 10 }}>
             <PdfContactField icon="mail" value={personal.email} tokens={tokens} color="rgba(255,255,255,0.9)" />
             <PdfContactField icon="phone" value={personal.phone} tokens={tokens} color="rgba(255,255,255,0.9)" />
             <PdfContactField icon="mapPin" value={personal.address} tokens={tokens} color="rgba(255,255,255,0.9)" />
-            <PdfContactField icon="globe" value={personal.website} tokens={tokens} color="rgba(255,255,255,0.9)" />
+            <PdfContactField icon="globe" value={personal.portfolio} tokens={tokens} color="rgba(255,255,255,0.9)" />
             <PdfContactField icon="linkedin" value={personal.linkedin} tokens={tokens} color="rgba(255,255,255,0.9)" />
             <PdfContactField icon="github" value={personal.github} tokens={tokens} color="rgba(255,255,255,0.9)" />
           </View>

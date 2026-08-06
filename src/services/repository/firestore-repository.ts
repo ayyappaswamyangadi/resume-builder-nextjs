@@ -14,6 +14,11 @@ import type { ResumeRepository } from "@/services/repository/types"
 
 const COLLECTION = "resumes"
 
+/** Fills in `status` for documents written before the field existed. */
+function normalize(resume: Resume): Resume {
+  return resume.status ? resume : { ...resume, status: "draft" }
+}
+
 /** Logged-in persistence: Firestore, scoped to the signed-in user's uid. */
 export class FirestoreResumeRepository implements ResumeRepository {
   constructor(private readonly uid: string) {}
@@ -29,7 +34,7 @@ export class FirestoreResumeRepository implements ResumeRepository {
     const q = query(collection(db, COLLECTION), where("ownerId", "==", this.uid))
     const snap = await getDocs(q)
     return snap.docs
-      .map((d) => d.data() as Resume)
+      .map((d) => normalize(d.data() as Resume))
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
   }
 
@@ -37,7 +42,7 @@ export class FirestoreResumeRepository implements ResumeRepository {
     const db = this.requireDb()
     const snap = await getDoc(doc(db, COLLECTION, id))
     if (!snap.exists()) return null
-    const resume = snap.data() as Resume
+    const resume = normalize(snap.data() as Resume)
     return resume.ownerId === this.uid ? resume : null
   }
 

@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { toPlainText } from "@/lib/richtext/plain-text"
 
 const optionalUrl = z
   .string()
@@ -15,7 +16,6 @@ export const personalDetailsSchema = z.object({
   role: z.string().trim().min(1, "Professional role is required"),
   email: optionalEmail,
   phone: z.string().trim(),
-  website: optionalUrl,
   linkedin: optionalUrl,
   github: optionalUrl,
   portfolio: optionalUrl,
@@ -23,8 +23,15 @@ export const personalDetailsSchema = z.object({
   photoUrl: z.string().trim(),
 })
 
-export const summarySchema = z.string().trim().max(2000)
-export const objectiveSchema = z.string().trim().max(2000)
+// Summary/objective store rich-text HTML, so length limits apply to the rendered text, not the raw markup.
+export const summarySchema = z
+  .string()
+  .trim()
+  .refine((v) => toPlainText(v).length <= 2000, "Must be 2000 characters or fewer")
+export const objectiveSchema = z
+  .string()
+  .trim()
+  .refine((v) => toPlainText(v).length <= 2000, "Must be 2000 characters or fewer")
 
 export const experienceItemSchema = z.object({
   id: z.string(),

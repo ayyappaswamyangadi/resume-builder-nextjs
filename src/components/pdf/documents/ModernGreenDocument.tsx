@@ -17,14 +17,14 @@ export function ModernGreenDocument({ data, sectionOrder, customization }: Templ
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={{ borderBottomWidth: 2, borderBottomColor: tokens.primary, paddingBottom: 8 }}>
-          <Text style={{ fontSize: tokens.size.xxl, fontWeight: 700, color: tokens.primary }}>{personal.fullName || "Your Name"}</Text>
+          <Text style={{ fontSize: tokens.size.xxl, lineHeight: 1.2, fontWeight: 700, color: tokens.primary }}>{personal.fullName || "Your Name"}</Text>
           {personal.role && <Text style={{ fontSize: tokens.size.lg, color: tokens.muted }}>{personal.role}</Text>}
         </View>
         <View style={{ flexDirection: "row", flexWrap: "wrap", borderBottomWidth: 1, borderBottomColor: tokens.border, paddingVertical: 6, marginBottom: 10 }}>
           <PdfContactField icon="mail" value={personal.email} tokens={tokens} />
           <PdfContactField icon="phone" value={personal.phone} tokens={tokens} />
           <PdfContactField icon="mapPin" value={personal.address} tokens={tokens} />
-          <PdfContactField icon="globe" value={personal.website} tokens={tokens} />
+          <PdfContactField icon="globe" value={personal.portfolio} tokens={tokens} />
           <PdfContactField icon="linkedin" value={personal.linkedin} tokens={tokens} />
           <PdfContactField icon="github" value={personal.github} tokens={tokens} />
         </View>

@@ -6,7 +6,7 @@ import "./globals.css"
 export const metadata: Metadata = {
   title: "Resume Builder — Craft a resume that gets you hired",
   description:
-    "Build a professional, ATS-friendly resume in minutes with live preview, 10 designer templates, and high-quality PDF export.",
+    "Build a professional, ATS-friendly resume in minutes with live preview, 50 designer templates, and high-quality PDF export. 100% free — just sign up.",
 }
 
 export const viewport: Viewport = {

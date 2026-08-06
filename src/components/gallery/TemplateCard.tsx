@@ -1,9 +1,11 @@
 "use client"
 
+import * as React from "react"
 import { motion } from "motion/react"
 import { Check, ImageOff, Loader2, Sparkles, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ScaledPagePreview } from "@/components/builder/ScaledPagePreview"
 import { SAMPLE_RESUME_DATA, SAMPLE_SECTION_ORDER } from "@/constants/sample-resume"
 import type { TemplateDefinition } from "@/types/template"
@@ -12,6 +14,42 @@ const BADGE_META = {
   ats: { label: "ATS Friendly", className: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" },
   popular: { label: "Popular", className: "bg-amber-500/15 text-amber-600 dark:text-amber-400" },
   premium: { label: "Premium", className: "bg-violet-500/15 text-violet-600 dark:text-violet-400" },
+}
+
+function PreviewSkeleton() {
+  return <Skeleton className="size-full" />
+}
+
+/**
+ * Mounts children only once scrolled near the viewport. With 50 templates on
+ * this page, rendering every full-page preview (and fetching its chunk) up
+ * front is the main source of jank — this defers both until needed.
+ */
+function LazyMount({ children }: { children: React.ReactNode }) {
+  const ref = React.useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = React.useState(false)
+
+  React.useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: "300px" }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div ref={ref} style={{ width: 794, height: 1123 }}>
+      {visible ? <React.Suspense fallback={<PreviewSkeleton />}>{children}</React.Suspense> : <PreviewSkeleton />}
+    </div>
+  )
 }
 
 export function TemplateCard({
@@ -36,14 +74,16 @@ export function TemplateCard({
     >
       <div className="relative h-64 overflow-hidden bg-muted/40 p-3">
         <div className="pointer-events-none origin-top scale-[0.62]">
-          <ScaledPagePreview>
-            <Preview
-              data={SAMPLE_RESUME_DATA}
-              sectionOrder={SAMPLE_SECTION_ORDER}
-              customization={template.defaultCustomization}
-              showPhoto={template.hasPhoto}
-            />
-          </ScaledPagePreview>
+          <LazyMount>
+            <ScaledPagePreview>
+              <Preview
+                data={SAMPLE_RESUME_DATA}
+                sectionOrder={SAMPLE_SECTION_ORDER}
+                customization={template.defaultCustomization}
+                showPhoto={template.hasPhoto}
+              />
+            </ScaledPagePreview>
+          </LazyMount>
         </div>
         <div className="absolute left-2 top-2 flex flex-wrap gap-1">
           {template.badges.map((badge) => (

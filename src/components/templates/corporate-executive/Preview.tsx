@@ -32,7 +32,7 @@ export function CorporateExecutivePreview({ data, sectionOrder, customization, s
             <ContactItem icon={Mail} iconStyle={tokens.iconStyle}>{personal.email}</ContactItem>
             <ContactItem icon={Phone} iconStyle={tokens.iconStyle}>{personal.phone}</ContactItem>
             <ContactItem icon={MapPin} iconStyle={tokens.iconStyle}>{personal.address}</ContactItem>
-            <ContactItem icon={Globe} iconStyle={tokens.iconStyle}>{personal.website}</ContactItem>
+            <ContactItem icon={Globe} iconStyle={tokens.iconStyle}>{personal.portfolio}</ContactItem>
             <ContactItem icon={LinkedinIcon} iconStyle={tokens.iconStyle}>{personal.linkedin}</ContactItem>
           </div>
         </div>

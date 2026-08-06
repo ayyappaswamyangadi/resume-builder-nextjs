@@ -1,5 +1,6 @@
 import { SectionHeading } from "@/components/templates/primitives/SectionHeading"
 import { Bullets } from "@/components/templates/primitives/Bullets"
+import { RichTextView } from "@/components/templates/richtext/RichTextView"
 import { formatDateRange, formatMonthYear } from "@/lib/format"
 import type { ResolvedTokens } from "@/lib/templates/tokens"
 import type { ResumeData, SectionMeta } from "@/types/resume"
@@ -50,8 +51,8 @@ export function sectionHasContent(meta: SectionMeta, data: ResumeData): boolean 
 function renderBody(meta: SectionMeta, data: ResumeData) {
   const ref = meta.ref
 
-  if (ref === "summary") return data.summary ? <p>{data.summary}</p> : null
-  if (ref === "objective") return data.objective ? <p>{data.objective}</p> : null
+  if (ref === "summary") return data.summary ? <RichTextView html={data.summary} /> : null
+  if (ref === "objective") return data.objective ? <RichTextView html={data.objective} /> : null
   if (ref === "hobbies") {
     if (data.hobbies.length === 0) return null
     return <p>{data.hobbies.join(" · ")}</p>
@@ -100,7 +101,7 @@ function renderBody(meta: SectionMeta, data: ResumeData) {
               {item.location && `, ${item.location}`}
               {item.grade && ` · ${item.grade}`}
             </p>
-            {item.description && <p className="text-[var(--tpl-size-sm)]">{item.description}</p>}
+            {item.description && <RichTextView html={item.description} className="text-[var(--tpl-size-sm)]" />}
           </div>
         ))}
       </>
@@ -119,7 +120,7 @@ function renderBody(meta: SectionMeta, data: ResumeData) {
                 {formatDateRange(item.startDate, item.endDate)}
               </p>
             </div>
-            {item.description && <p className="text-[var(--tpl-size-sm)]">{item.description}</p>}
+            {item.description && <RichTextView html={item.description} className="text-[var(--tpl-size-sm)]" />}
             {item.techStack.length > 0 && (
               <p className="text-[var(--tpl-size-xs)] text-[var(--tpl-muted)]">{item.techStack.join(" · ")}</p>
             )}
@@ -164,7 +165,7 @@ function renderBody(meta: SectionMeta, data: ResumeData) {
                 {formatMonthYear(item.date)}
               </p>
             </div>
-            {item.description && <p className="text-[var(--tpl-size-sm)]">{item.description}</p>}
+            {item.description && <RichTextView html={item.description} className="text-[var(--tpl-size-sm)]" />}
           </div>
         ))}
       </>
@@ -203,7 +204,7 @@ function renderBody(meta: SectionMeta, data: ResumeData) {
               </p>
             </div>
             {item.publisher && <p className="text-[var(--tpl-size-sm)] text-[var(--tpl-muted)]">{item.publisher}</p>}
-            {item.description && <p className="text-[var(--tpl-size-sm)]">{item.description}</p>}
+            {item.description && <RichTextView html={item.description} className="text-[var(--tpl-size-sm)]" />}
           </div>
         ))}
       </>
@@ -224,7 +225,7 @@ function renderBody(meta: SectionMeta, data: ResumeData) {
                 {formatDateRange(item.startDate, item.endDate)}
               </p>
             </div>
-            {item.description && <p className="text-[var(--tpl-size-sm)]">{item.description}</p>}
+            {item.description && <RichTextView html={item.description} className="text-[var(--tpl-size-sm)]" />}
           </div>
         ))}
       </>
@@ -245,7 +246,7 @@ function renderBody(meta: SectionMeta, data: ResumeData) {
                 {formatDateRange(item.startDate, item.endDate)}
               </p>
             </div>
-            {item.description && <p className="text-[var(--tpl-size-sm)]">{item.description}</p>}
+            {item.description && <RichTextView html={item.description} className="text-[var(--tpl-size-sm)]" />}
           </div>
         ))}
       </>
@@ -288,7 +289,7 @@ function renderBody(meta: SectionMeta, data: ResumeData) {
               )}
             </div>
             {item.subheading && <p className="text-[var(--tpl-size-sm)] text-[var(--tpl-muted)]">{item.subheading}</p>}
-            {item.description && <p className="text-[var(--tpl-size-sm)]">{item.description}</p>}
+            {item.description && <RichTextView html={item.description} className="text-[var(--tpl-size-sm)]" />}
           </div>
         ))}
       </>

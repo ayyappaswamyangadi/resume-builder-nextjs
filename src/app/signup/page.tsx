@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, UserRound } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { AuthShell } from "@/components/auth/AuthShell"
 import { GoogleIcon } from "@/components/shared/GoogleIcon"
 import { Button } from "@/components/ui/button"
@@ -17,11 +17,11 @@ import { signupSchema, type SignupFormValues } from "@/lib/validation/auth"
 
 export default function SignupPage() {
   const router = useRouter()
-  const { status, error, signInWithGoogle, signUpWithEmail, continueAsGuest, clearError } = useAuthStore()
-  const [isSubmitting, setIsSubmitting] = React.useState<"google" | "email" | "guest" | null>(null)
+  const { status, error, signInWithGoogle, signUpWithEmail, clearError } = useAuthStore()
+  const [isSubmitting, setIsSubmitting] = React.useState<"google" | "email" | null>(null)
 
   React.useEffect(() => {
-    if (status === "authenticated" || status === "guest") router.replace("/dashboard")
+    if (status === "authenticated") router.replace("/dashboard")
   }, [status, router])
 
   const form = useForm<SignupFormValues>({
@@ -46,7 +46,7 @@ export default function SignupPage() {
   return (
     <AuthShell
       title="Create your account"
-      subtitle="Save resumes to the cloud and pick up where you left off, anywhere."
+      subtitle="100% free, forever — 50 templates, AI writing assist, and unlimited PDF exports, no credit card required."
       footer={
         <>
           Already have an account?{" "}
@@ -69,18 +69,6 @@ export default function SignupPage() {
             <GoogleIcon className="size-4" />
           )}
           Continue with Google
-        </Button>
-        <Button
-          variant="secondary"
-          className="w-full"
-          onClick={() => {
-            setIsSubmitting("guest")
-            continueAsGuest()
-          }}
-          disabled={isSubmitting !== null}
-        >
-          <UserRound className="size-4" aria-hidden="true" />
-          Continue as Guest
         </Button>
       </div>
 

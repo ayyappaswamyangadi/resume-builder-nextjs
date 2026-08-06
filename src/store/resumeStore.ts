@@ -3,13 +3,14 @@ import { produce } from "immer"
 import { createRepository, type ResumeRepository } from "@/services/repository"
 import { createDefaultSectionOrder, createResume, duplicateResume } from "@/lib/resume/factory"
 import { createId } from "@/lib/id"
-import { debounce } from "@/lib/debounce"
+import { usePreferencesStore } from "@/store/preferencesStore"
 import type {
   CustomizationConfig,
   CustomSection,
   CustomSectionItem,
   Resume,
   ResumeData,
+  ResumeStatus,
   ResumeSummary,
   SectionMeta,
   TemplateId,
@@ -20,6 +21,7 @@ function toSummary(resume: Resume): ResumeSummary {
     id: resume.id,
     title: resume.title,
     templateId: resume.templateId,
+    status: resume.status,
     updatedAt: resume.updatedAt,
     createdAt: resume.createdAt,
     fullName: resume.data.personal.fullName,
@@ -40,6 +42,7 @@ interface ResumeState {
   resumes: ResumeSummary[]
   activeResume: Resume | null
   isLoading: boolean
+  isResumeLoading: boolean
   isSaving: boolean
   lastSavedAt: string | null
 
@@ -51,6 +54,8 @@ interface ResumeState {
   duplicate: (id: string) => Promise<void>
   remove: (id: string) => Promise<void>
   rename: (id: string, title: string) => Promise<void>
+  setStatus: (id: string, status: ResumeStatus) => Promise<void>
+  saveNow: () => Promise<void>
 
   mutateActive: (recipe: (draft: Resume) => void) => void
   setTemplate: (templateId: TemplateId) => void
@@ -77,21 +82,32 @@ interface ResumeState {
   reorderItems: <K extends RepeatableKey>(key: K, items: ResumeData[K]) => void
 }
 
-const scheduleSave = debounce((get: () => ResumeState) => {
+let autosaveTimer: ReturnType<typeof setTimeout> | null = null
+
+function performSave(get: () => ResumeState) {
   const { activeResume, repository } = get()
-  if (!activeResume) return
+  if (!activeResume) return Promise.resolve()
   useResumeStore.setState({ isSaving: true })
-  repository
+  return repository
     .save(activeResume)
     .then(() => useResumeStore.setState({ isSaving: false, lastSavedAt: new Date().toISOString() }))
     .catch(() => useResumeStore.setState({ isSaving: false }))
-}, 600)
+}
+
+/** Schedules an autosave respecting the user's autosave preference; a no-op when autosave is disabled. */
+function scheduleSave(get: () => ResumeState) {
+  if (autosaveTimer) clearTimeout(autosaveTimer)
+  const { autosaveEnabled, autosaveIntervalMs } = usePreferencesStore.getState()
+  if (!autosaveEnabled) return
+  autosaveTimer = setTimeout(() => performSave(get), autosaveIntervalMs)
+}
 
 export const useResumeStore = create<ResumeState>((set, get) => ({
   repository: createRepository(null),
   resumes: [],
   activeResume: null,
   isLoading: false,
+  isResumeLoading: false,
   isSaving: false,
   lastSavedAt: null,
 
@@ -111,9 +127,9 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
   },
 
   loadResume: async (id) => {
-    set({ isLoading: true })
+    set({ isResumeLoading: true })
     const resume = await get().repository.get(id)
-    set({ activeResume: resume, isLoading: false })
+    set({ activeResume: resume, isResumeLoading: false })
   },
 
   clearActive: () => set({ activeResume: null }),
@@ -121,21 +137,24 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
   createNew: async (templateId, title = "Untitled Resume") => {
     const resume = createResume(templateId, title)
     await get().repository.save(resume)
-    await get().refreshList()
+    set((state) => ({ resumes: [toSummary(resume), ...state.resumes] }))
     return resume
   },
 
   duplicate: async (id) => {
     const existing = await get().repository.get(id)
     if (!existing) return
-    await get().repository.save(duplicateResume(existing))
-    await get().refreshList()
+    const copy = duplicateResume(existing)
+    await get().repository.save(copy)
+    set((state) => ({ resumes: [toSummary(copy), ...state.resumes] }))
   },
 
   remove: async (id) => {
     await get().repository.remove(id)
-    if (get().activeResume?.id === id) set({ activeResume: null })
-    await get().refreshList()
+    set((state) => ({
+      resumes: state.resumes.filter((r) => r.id !== id),
+      activeResume: state.activeResume?.id === id ? null : state.activeResume,
+    }))
   },
 
   rename: async (id, title) => {
@@ -143,8 +162,29 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
     if (!existing) return
     const updated = { ...existing, title, updatedAt: new Date().toISOString() }
     await get().repository.save(updated)
-    if (get().activeResume?.id === id) set({ activeResume: updated })
-    await get().refreshList()
+    set((state) => ({
+      resumes: state.resumes.map((r) => (r.id === id ? toSummary(updated) : r)),
+      activeResume: state.activeResume?.id === id ? updated : state.activeResume,
+    }))
+  },
+
+  setStatus: async (id, status) => {
+    const existing = await get().repository.get(id)
+    if (!existing) return
+    const updated = { ...existing, status, updatedAt: new Date().toISOString() }
+    await get().repository.save(updated)
+    set((state) => ({
+      resumes: state.resumes.map((r) => (r.id === id ? toSummary(updated) : r)),
+      activeResume: state.activeResume?.id === id ? updated : state.activeResume,
+    }))
+  },
+
+  saveNow: async () => {
+    if (autosaveTimer) {
+      clearTimeout(autosaveTimer)
+      autosaveTimer = null
+    }
+    await performSave(get)
   },
 
   mutateActive: (recipe) => {

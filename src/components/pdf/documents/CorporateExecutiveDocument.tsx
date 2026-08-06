@@ -30,13 +30,13 @@ export function CorporateExecutiveDocument({ data, sectionOrder, customization, 
         >
           {showPhoto && <PdfProfilePhoto photoUrl={personal.photoUrl} fullName={personal.fullName} shape="square" size={72} backgroundColor={tokens.primary} />}
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: tokens.size.xxl, fontWeight: 700, color: tokens.primary }}>{personal.fullName || "Your Name"}</Text>
+            <Text style={{ fontSize: tokens.size.xxl, lineHeight: 1.2, fontWeight: 700, color: tokens.primary }}>{personal.fullName || "Your Name"}</Text>
             {personal.role && <Text style={{ fontSize: tokens.size.lg, fontWeight: 600, color: tokens.accent }}>{personal.role}</Text>}
             <View style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 4 }}>
               <PdfContactField icon="mail" value={personal.email} tokens={tokens} />
               <PdfContactField icon="phone" value={personal.phone} tokens={tokens} />
               <PdfContactField icon="mapPin" value={personal.address} tokens={tokens} />
-              <PdfContactField icon="globe" value={personal.website} tokens={tokens} />
+              <PdfContactField icon="globe" value={personal.portfolio} tokens={tokens} />
               <PdfContactField icon="linkedin" value={personal.linkedin} tokens={tokens} />
             </View>
           </View>

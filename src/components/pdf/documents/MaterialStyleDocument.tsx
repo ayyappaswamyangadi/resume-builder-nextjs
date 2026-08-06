@@ -1,5 +1,6 @@
 import { Document, Page, Text, View } from "@react-pdf/renderer"
 import { PdfSectionContent, pdfSectionHasContent } from "@/components/pdf/primitives/PdfSectionContent"
+import { PdfContactInlineLine } from "@/components/pdf/primitives/PdfContactInlineLine"
 import { ensurePdfFontsRegistered } from "@/lib/pdf/fonts"
 import { createPdfStyles } from "@/lib/pdf/styles"
 import { resolveTokens } from "@/lib/templates/tokens"
@@ -17,11 +18,19 @@ export function MaterialStyleDocument({ data, sectionOrder, customization }: Tem
     <Document>
       <Page size="A4" style={[styles.page, { backgroundColor: "#f3f4f6" }]}>
         <View style={{ backgroundColor: tokens.primary, borderRadius: tokens.radius, padding: 14, marginBottom: 10 }}>
-          <Text style={{ fontSize: tokens.size.xxl, fontWeight: 500, color: "#ffffff" }}>{personal.fullName || "Your Name"}</Text>
+          <Text style={{ fontSize: tokens.size.xxl, lineHeight: 1.2, fontWeight: 500, color: "#ffffff" }}>{personal.fullName || "Your Name"}</Text>
           {personal.role && <Text style={{ fontSize: tokens.size.lg, color: "rgba(255,255,255,0.9)" }}>{personal.role}</Text>}
-          <Text style={{ fontSize: tokens.size.xs, color: "rgba(255,255,255,0.85)", marginTop: 4 }}>
-            {[personal.email, personal.phone, personal.address, personal.website, personal.linkedin].filter(Boolean).join("  •  ")}
-          </Text>
+          <PdfContactInlineLine
+            items={[
+            { value: personal.email, kind: "email" },
+            { value: personal.phone },
+            { value: personal.address },
+            { value: personal.portfolio, kind: "portfolio" },
+            { value: personal.linkedin, kind: "linkedin" },
+          ]}
+            separator="  •  "
+            style={{ fontSize: tokens.size.xs, color: "rgba(255,255,255,0.85)", marginTop: 4 }}
+          />
         </View>
 
         {sections.map((meta) => (

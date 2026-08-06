@@ -33,7 +33,7 @@ export function PremiumPortfolioDocument({ data, sectionOrder, customization, sh
           {showPhoto && (
             <PdfProfilePhoto photoUrl={personal.photoUrl} fullName={personal.fullName} size={92} backgroundColor={tokens.accent} />
           )}
-          <Text style={{ fontSize: tokens.size.xl, fontWeight: 700, color: "#ffffff", marginTop: 8, textAlign: "center" }}>
+          <Text style={{ fontSize: tokens.size.xl, lineHeight: 1.2, fontWeight: 700, color: "#ffffff", marginTop: 8, textAlign: "center" }}>
             {personal.fullName || "Your Name"}
           </Text>
           {personal.role && (
@@ -48,7 +48,7 @@ export function PremiumPortfolioDocument({ data, sectionOrder, customization, sh
             <PdfContactField icon="mail" value={personal.email} tokens={tokens} color="rgba(229,231,235,0.9)" />
             <PdfContactField icon="phone" value={personal.phone} tokens={tokens} color="rgba(229,231,235,0.9)" />
             <PdfContactField icon="mapPin" value={personal.address} tokens={tokens} color="rgba(229,231,235,0.9)" />
-            <PdfContactField icon="globe" value={personal.website} tokens={tokens} color="rgba(229,231,235,0.9)" />
+            <PdfContactField icon="globe" value={personal.portfolio} tokens={tokens} color="rgba(229,231,235,0.9)" />
             <PdfContactField icon="linkedin" value={personal.linkedin} tokens={tokens} color="rgba(229,231,235,0.9)" />
             <PdfContactField icon="github" value={personal.github} tokens={tokens} color="rgba(229,231,235,0.9)" />
           </View>

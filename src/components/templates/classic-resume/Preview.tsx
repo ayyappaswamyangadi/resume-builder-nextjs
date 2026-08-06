@@ -1,5 +1,6 @@
 import { A4Page } from "@/components/templates/primitives/A4Page"
 import { ResumeSectionBlock, sectionHasContent } from "@/components/templates/primitives/ResumeSectionBlock"
+import { ContactInlineLine } from "@/components/templates/primitives/ContactInlineLine"
 import { resolveTokens } from "@/lib/templates/tokens"
 import type { TemplateRenderProps } from "@/types/template"
 
@@ -13,9 +14,11 @@ export function ClassicResumePreview({ data, sectionOrder, customization }: Temp
       <header className="text-center">
         <h1 className="text-[var(--tpl-size-xxl)] font-bold">{personal.fullName || "Your Name"}</h1>
         {personal.role && <p className="text-[var(--tpl-size-base)] italic text-[var(--tpl-muted)]">{personal.role}</p>}
-        <p className="mt-1 text-[var(--tpl-size-xs)]">
-          {[personal.address, personal.phone, personal.email, personal.linkedin].filter(Boolean).join(" | ")}
-        </p>
+        <ContactInlineLine
+          items={[{ value: personal.address }, { value: personal.phone }, { value: personal.email, kind: "email" }, { value: personal.linkedin, kind: "linkedin" }]}
+          separator=" | "
+          className="mt-1 text-[var(--tpl-size-xs)]"
+        />
       </header>
 
       <div className="mt-4 flex flex-col" style={{ gap: tokens.spacing.section }}>

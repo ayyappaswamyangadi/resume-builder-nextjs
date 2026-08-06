@@ -1,14 +1,13 @@
-import { createDefaultSectionOrder } from "@/lib/resume/factory"
+import { createDefaultSectionOrder } from "@/constants/sections"
 import type { ResumeData } from "@/types/resume"
 
-/** Realistic placeholder content used to render template previews in the gallery. */
+/** Realistic placeholder content - used for gallery template previews and to seed new resumes. */
 export const SAMPLE_RESUME_DATA: ResumeData = {
   personal: {
     fullName: "Ariana Cole",
     role: "Senior Product Designer",
     email: "ariana.cole@example.com",
     phone: "+1 (555) 012-3456",
-    website: "arianacole.design",
     linkedin: "linkedin.com/in/arianacole",
     github: "github.com/arianacole",
     portfolio: "arianacole.design/work",

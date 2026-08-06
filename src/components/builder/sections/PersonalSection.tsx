@@ -5,23 +5,24 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Upload, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { ProfilePhoto } from "@/components/templates/primitives/ProfilePhoto"
 import { personalDetailsSchema, type PersonalDetailsFormValues } from "@/lib/validation/resume"
+import { useDebouncedCallback } from "@/hooks/useDebouncedCallback"
 import { useResumeStore } from "@/store/resumeStore"
 import type { PersonalDetails } from "@/types/resume"
 
-const FIELDS: { name: keyof PersonalDetailsFormValues; label: string; placeholder?: string; half?: boolean }[] = [
+const FIELDS: { name: keyof PersonalDetailsFormValues; label: string; placeholder?: string; half?: boolean; multiline?: boolean }[] = [
   { name: "fullName", label: "Full name", half: true },
   { name: "role", label: "Professional role", placeholder: "e.g. Senior Software Engineer", half: true },
   { name: "email", label: "Email", half: true },
   { name: "phone", label: "Phone", half: true },
-  { name: "website", label: "Website", placeholder: "https://", half: true },
   { name: "linkedin", label: "LinkedIn", placeholder: "https://linkedin.com/in/...", half: true },
   { name: "github", label: "GitHub", placeholder: "https://github.com/...", half: true },
   { name: "portfolio", label: "Portfolio", placeholder: "https://", half: true },
-  { name: "address", label: "Address" },
+  { name: "address", label: "Address", placeholder: "Street, City, State, ZIP", multiline: true },
 ]
 
 function readFileAsDataUrl(file: File): Promise<string> {
@@ -43,10 +44,12 @@ export function PersonalSection({ personal, showPhotoUpload }: { personal: Perso
     mode: "onBlur",
   })
 
+  const debouncedSetPersonal = useDebouncedCallback(setPersonal, 250)
+
   React.useEffect(() => {
-    const subscription = form.watch((values) => setPersonal(values as Partial<PersonalDetails>))
+    const subscription = form.watch((values) => debouncedSetPersonal(values as Partial<PersonalDetails>))
     return () => subscription.unsubscribe()
-  }, [form, setPersonal])
+  }, [form, debouncedSetPersonal])
 
   async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -87,7 +90,17 @@ export function PersonalSection({ personal, showPhotoUpload }: { personal: Perso
         {FIELDS.map((field) => (
           <div key={field.name} className={field.half ? "" : "col-span-2"}>
             <Label htmlFor={field.name}>{field.label}</Label>
-            <Input id={field.name} placeholder={field.placeholder} {...form.register(field.name)} className="mt-1.5" />
+            {field.multiline ? (
+              <Textarea
+                id={field.name}
+                placeholder={field.placeholder}
+                rows={2}
+                {...form.register(field.name)}
+                className="mt-1.5"
+              />
+            ) : (
+              <Input id={field.name} placeholder={field.placeholder} {...form.register(field.name)} className="mt-1.5" />
+            )}
             {form.formState.errors[field.name] && (
               <p className="mt-1 text-xs text-destructive">{form.formState.errors[field.name]?.message}</p>
             )}

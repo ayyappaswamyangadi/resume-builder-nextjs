@@ -31,7 +31,7 @@ export default function TemplatesPage() {
     }
   }
 
-  const isLoggedInLayout = status === "authenticated" || status === "guest"
+  const isLoggedInLayout = status === "authenticated"
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -40,7 +40,8 @@ export default function TemplatesPage() {
         <div className="mb-6">
           <h1 className="text-2xl font-semibold tracking-tight">Templates</h1>
           <p className="text-sm text-muted-foreground">
-            10 professionally designed templates — pick one to start building.
+            50 professionally designed templates — pick one to start building. All free, forever
+            — just sign up.
           </p>
         </div>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

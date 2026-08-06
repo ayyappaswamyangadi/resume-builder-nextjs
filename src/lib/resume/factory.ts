@@ -1,12 +1,14 @@
 import { createId } from "@/lib/id"
-import { DEFAULT_SECTION_ORDER, SECTION_LABELS } from "@/constants/sections"
+import { createDefaultSectionOrder } from "@/constants/sections"
+import { SAMPLE_RESUME_DATA } from "@/constants/sample-resume"
 import type {
   CustomizationConfig,
   Resume,
   ResumeData,
-  SectionMeta,
   TemplateId,
 } from "@/types/resume"
+
+export { createDefaultSectionOrder }
 
 export function createEmptyResumeData(): ResumeData {
   return {
@@ -15,7 +17,6 @@ export function createEmptyResumeData(): ResumeData {
       role: "",
       email: "",
       phone: "",
-      website: "",
       linkedin: "",
       github: "",
       portfolio: "",
@@ -40,15 +41,6 @@ export function createEmptyResumeData(): ResumeData {
   }
 }
 
-export function createDefaultSectionOrder(): SectionMeta[] {
-  return DEFAULT_SECTION_ORDER.map((ref) => ({
-    ref,
-    label: SECTION_LABELS[ref],
-    visible: true,
-    collapsed: false,
-  }))
-}
-
 export function createDefaultCustomization(): CustomizationConfig {
   return {
     primaryColor: "#1d4ed8",
@@ -63,6 +55,10 @@ export function createDefaultCustomization(): CustomizationConfig {
   }
 }
 
+/**
+ * New resumes start pre-filled with sample content (rather than blank fields) so the builder
+ * preview never opens empty - the user edits/replaces each field with their own info.
+ */
 export function createResume(templateId: TemplateId, title = "Untitled Resume", ownerId: string | null = null): Resume {
   const now = new Date().toISOString()
   return {
@@ -70,7 +66,8 @@ export function createResume(templateId: TemplateId, title = "Untitled Resume", 
     ownerId,
     title,
     templateId,
-    data: createEmptyResumeData(),
+    status: "draft",
+    data: structuredClone(SAMPLE_RESUME_DATA),
     sectionOrder: createDefaultSectionOrder(),
     customization: createDefaultCustomization(),
     createdAt: now,

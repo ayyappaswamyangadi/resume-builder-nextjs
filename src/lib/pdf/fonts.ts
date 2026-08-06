@@ -9,12 +9,22 @@ export function ensurePdfFontsRegistered() {
   registered = true
 
   for (const font of FONT_OPTIONS) {
+    const weights = [400, 500, 600, 700]
     Font.register({
       family: font.label,
-      fonts: [400, 500, 600, 700].map((weight) => ({
-        src: `/fonts/${font.pdfFolder}/${weight}.ttf`,
-        fontWeight: weight,
-      })),
+      fonts: [
+        ...weights.map((weight) => ({
+          src: `/fonts/${font.pdfFolder}/${weight}.ttf`,
+          fontWeight: weight,
+        })),
+        // Self-hosted italic faces - needed so italic runs from rich-text content (summary,
+        // bullets, descriptions) render properly instead of crashing react-pdf's font resolver.
+        ...weights.map((weight) => ({
+          src: `/fonts/${font.pdfFolder}/${weight}-italic.ttf`,
+          fontWeight: weight,
+          fontStyle: "italic" as const,
+        })),
+      ],
     })
   }
 

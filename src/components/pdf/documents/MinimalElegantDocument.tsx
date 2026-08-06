@@ -1,5 +1,6 @@
 import { Document, Page, Text, View } from "@react-pdf/renderer"
 import { PdfSectionContent } from "@/components/pdf/primitives/PdfSectionContent"
+import { PdfContactInlineLine } from "@/components/pdf/primitives/PdfContactInlineLine"
 import { ensurePdfFontsRegistered } from "@/lib/pdf/fonts"
 import { createPdfStyles } from "@/lib/pdf/styles"
 import { resolveTokens } from "@/lib/templates/tokens"
@@ -16,7 +17,7 @@ export function MinimalElegantDocument({ data, sectionOrder, customization }: Te
     <Document>
       <Page size="A4" style={[styles.page, { padding: `${tokens.spacing.pageMargin * 1.2}mm ${tokens.spacing.pageMargin}mm` }]}>
         <View style={{ alignItems: "center", marginBottom: 14 }}>
-          <Text style={{ fontSize: tokens.size.xxl, fontWeight: 300, letterSpacing: 1, color: tokens.primary }}>
+          <Text style={{ fontSize: tokens.size.xxl, lineHeight: 1.2, fontWeight: 400, letterSpacing: 1, color: tokens.primary }}>
             {personal.fullName || "Your Name"}
           </Text>
           {personal.role && (
@@ -25,9 +26,17 @@ export function MinimalElegantDocument({ data, sectionOrder, customization }: Te
             </Text>
           )}
           <View style={{ width: 40, height: 1, backgroundColor: tokens.accent, marginVertical: 8 }} />
-          <Text style={styles.xsmall}>
-            {[personal.email, personal.phone, personal.address, personal.website, personal.linkedin].filter(Boolean).join("   ·   ")}
-          </Text>
+          <PdfContactInlineLine
+            items={[
+            { value: personal.email, kind: "email" },
+            { value: personal.phone },
+            { value: personal.address },
+            { value: personal.portfolio, kind: "portfolio" },
+            { value: personal.linkedin, kind: "linkedin" },
+          ]}
+            separator="   ·   "
+            style={styles.xsmall}
+          />
         </View>
 
         {sectionOrder
