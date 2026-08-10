@@ -1,16 +1,30 @@
 import { create } from "zustand"
 import {
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
+  linkWithCredential,
   onAuthStateChanged,
+  reauthenticateWithPopup,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
   updateProfile,
+  type User as FirebaseUser,
 } from "firebase/auth"
 import { getFirebaseAuth, googleAuthProvider } from "@/lib/firebase/client"
 import type { AppUser } from "@/types/user"
 
 export type AuthStatus = "loading" | "authenticated" | "signed-out"
+
+function toAppUser(firebaseUser: FirebaseUser): AppUser {
+  return {
+    uid: firebaseUser.uid,
+    displayName: firebaseUser.displayName,
+    email: firebaseUser.email,
+    photoURL: firebaseUser.photoURL,
+    providerIds: firebaseUser.providerData.map((provider) => provider.providerId),
+  }
+}
 
 interface AuthState {
   user: AppUser | null
@@ -20,6 +34,7 @@ interface AuthState {
   signInWithGoogle: () => Promise<void>
   signInWithEmail: (email: string, password: string) => Promise<void>
   signUpWithEmail: (email: string, password: string, displayName: string) => Promise<void>
+  setPassword: (password: string) => Promise<boolean>
   signOutUser: () => Promise<void>
   clearError: () => void
 }
@@ -38,15 +53,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        set({
-          status: "authenticated",
-          user: {
-            uid: firebaseUser.uid,
-            displayName: firebaseUser.displayName,
-            email: firebaseUser.email,
-            photoURL: firebaseUser.photoURL,
-          },
-        })
+        set({ status: "authenticated", user: toAppUser(firebaseUser) })
         return
       }
       set({ status: "signed-out", user: null })
@@ -95,6 +102,47 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch {
       set({ error: "Could not create an account with those details." })
     }
+  },
+
+  setPassword: async (password) => {
+    const auth = getFirebaseAuth()
+    const currentUser = auth?.currentUser
+    if (!auth || !currentUser || !currentUser.email) {
+      set({ error: "You need to be signed in with an email address to set a password." })
+      return false
+    }
+
+    async function link() {
+      const credential = EmailAuthProvider.credential(currentUser!.email!, password)
+      await linkWithCredential(currentUser!, credential)
+    }
+
+    try {
+      await link()
+    } catch (err) {
+      const code = (err as { code?: string }).code
+      if (code === "auth/requires-recent-login") {
+        try {
+          await reauthenticateWithPopup(currentUser, googleAuthProvider)
+          await link()
+        } catch {
+          set({ error: "Please sign in again with Google, then retry setting a password." })
+          return false
+        }
+      } else if (code === "auth/provider-already-linked" || code === "auth/credential-already-in-use") {
+        set({ error: "A password is already set for this account." })
+        return false
+      } else if (code === "auth/weak-password") {
+        set({ error: "Choose a stronger password (at least 6 characters)." })
+        return false
+      } else {
+        set({ error: "Could not set a password. Please try again." })
+        return false
+      }
+    }
+
+    set({ error: null, user: toAppUser(currentUser) })
+    return true
   },
 
   signOutUser: async () => {

@@ -5,4 +5,5 @@ export interface AppUser {
   displayName: string | null
   email: string | null
   photoURL: string | null
+  providerIds: string[]
 }

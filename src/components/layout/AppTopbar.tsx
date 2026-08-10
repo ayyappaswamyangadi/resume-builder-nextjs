@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { FileText, LayoutGrid, Loader2, LogOut, Mail } from "lucide-react"
+import { FileText, KeyRound, LayoutGrid, Loader2, LogOut, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ThemeToggle } from "@/components/shared/ThemeToggle"
+import { SetPasswordDialog } from "@/components/auth/SetPasswordDialog"
 import { useAuthStore } from "@/store/authStore"
 
 export function AppTopbar() {
@@ -23,6 +24,8 @@ export function AppTopbar() {
   const router = useRouter()
   const { user, signOutUser } = useAuthStore()
   const [isSigningOut, setIsSigningOut] = React.useState(false)
+  const [setPasswordOpen, setSetPasswordOpen] = React.useState(false)
+  const hasPassword = user?.providerIds.includes("password") ?? true
 
   async function handleSignOut() {
     if (isSigningOut) return
@@ -79,6 +82,12 @@ export function AppTopbar() {
                 <DropdownMenuLabel className="truncate">{user?.displayName ?? user?.email}</DropdownMenuLabel>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
+              {!hasPassword && (
+                <DropdownMenuItem onSelect={() => setSetPasswordOpen(true)}>
+                  <KeyRound className="size-4" aria-hidden="true" />
+                  Set password
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem render={<a href="mailto:ayyappaswamy50@gmail.com" />}>
                 <Mail className="size-4" aria-hidden="true" />
                 Support
@@ -96,6 +105,7 @@ export function AppTopbar() {
           </DropdownMenu>
         </div>
       </div>
+      <SetPasswordDialog open={setPasswordOpen} onOpenChange={setSetPasswordOpen} />
     </header>
   )
 }
