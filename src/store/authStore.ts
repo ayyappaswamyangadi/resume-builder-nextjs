@@ -16,6 +16,73 @@ import type { AppUser } from "@/types/user"
 
 export type AuthStatus = "loading" | "authenticated" | "signed-out"
 
+function getErrorCode(err: unknown): string | undefined {
+  return (err as { code?: string }).code
+}
+
+function googleSignInErrorMessage(err: unknown): string {
+  switch (getErrorCode(err)) {
+    case "auth/unauthorized-domain":
+      return `Google sign-in isn't enabled for ${window.location.hostname}. Add it under Firebase Authentication → Settings → Authorized domains.`
+    case "auth/popup-blocked":
+      return "Your browser blocked the sign-in popup. Allow popups for this site and try again."
+    case "auth/popup-closed-by-user":
+    case "auth/cancelled-popup-request":
+      return "The sign-in popup was closed before finishing. Please try again."
+    case "auth/network-request-failed":
+      return "Network error while contacting Google. Check your connection and try again."
+    case "auth/web-storage-unsupported":
+      return "Your browser is blocking the storage sign-in needs. Disable private browsing or allow site data and try again."
+    case "auth/operation-not-allowed":
+      return "Google sign-in is not enabled for this app."
+    case "auth/user-disabled":
+      return "This account has been disabled."
+    case "auth/account-exists-with-different-credential":
+      return "An account already exists with this email. Sign in with your email and password instead."
+    case "auth/too-many-requests":
+      return "Too many attempts. Please wait a moment and try again."
+    default:
+      return "Google sign-in failed. Please try again."
+  }
+}
+
+function emailSignInErrorMessage(err: unknown): string {
+  switch (getErrorCode(err)) {
+    case "auth/invalid-credential":
+    case "auth/invalid-login-credentials":
+    case "auth/wrong-password":
+    case "auth/user-not-found":
+      return "Invalid email or password."
+    case "auth/invalid-email":
+      return "That email address is not valid."
+    case "auth/user-disabled":
+      return "This account has been disabled."
+    case "auth/too-many-requests":
+      return "Too many attempts. Please wait a moment and try again."
+    case "auth/network-request-failed":
+      return "Network error. Check your connection and try again."
+    default:
+      return "Could not sign in. Please try again."
+  }
+}
+
+function signUpErrorMessage(err: unknown): string {
+  switch (getErrorCode(err)) {
+    case "auth/email-already-in-use":
+      return "An account with this email already exists. Try signing in instead."
+    case "auth/invalid-email":
+      return "That email address is not valid."
+    case "auth/weak-password":
+      return "Choose a stronger password (at least 6 characters)."
+    case "auth/operation-not-allowed":
+      return "Email sign-up is not enabled for this app."
+    case "auth/network-request-failed":
+      return "Network error. Check your connection and try again."
+    default:
+      return "Could not create an account with those details."
+  }
+}
+
 function toAppUser(firebaseUser: FirebaseUser): AppUser {
   return {
     uid: firebaseUser.uid,
@@ -70,8 +137,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       await signInWithPopup(auth, googleAuthProvider)
       set({ error: null })
-    } catch {
-      set({ error: "Google sign-in failed. Please try again." })
+    } catch (err) {
+      console.error("Google sign-in failed", err)
+      set({ error: googleSignInErrorMessage(err) })
     }
   },
 
@@ -84,8 +152,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       await signInWithEmailAndPassword(auth, email, password)
       set({ error: null })
-    } catch {
-      set({ error: "Invalid email or password." })
+    } catch (err) {
+      set({ error: emailSignInErrorMessage(err) })
     }
   },
 
@@ -99,8 +167,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       const credential = await createUserWithEmailAndPassword(auth, email, password)
       if (displayName) await updateProfile(credential.user, { displayName })
       set({ error: null })
-    } catch {
-      set({ error: "Could not create an account with those details." })
+    } catch (err) {
+      set({ error: signUpErrorMessage(err) })
     }
   },
 
@@ -120,7 +188,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       await link()
     } catch (err) {
-      const code = (err as { code?: string }).code
+      const code = getErrorCode(err)
       if (code === "auth/requires-recent-login") {
         try {
           await reauthenticateWithPopup(currentUser, googleAuthProvider)

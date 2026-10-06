@@ -122,6 +122,12 @@ firebase deploy --only hosting
 
 If you'd rather deploy to Vercel/Netlify instead of Firebase Hosting, the static export works there too — just point the platform at the `out/` directory (or drop `output: "export"` from `next.config.ts` to use their native Next.js runtime instead).
 
+**Google sign-in on Vercel (Safari).** Safari blocks the cross-site storage that `signInWithPopup` relies on when the app's domain differs from `authDomain`. `vercel.json` proxies `/__/auth/*` to `<project>.firebaseapp.com` so the auth handler is same-origin. For that to take effect:
+
+1. Set `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` in Vercel to your Vercel domain (e.g. `your-app.vercel.app`) and redeploy.
+2. In Google Cloud Console → APIs & Services → Credentials → the "Web client (auto created by Google Service)" OAuth client, add `https://your-app.vercel.app/__/auth/handler` to **Authorized redirect URIs**.
+3. In Firebase Console → Authentication → Settings → **Authorized domains**, add `your-app.vercel.app`.
+
 ## AI features
 
 No AI API key is required to run or evaluate this app. Every AI-labeled button (Improve with AI, Generate with AI, Rewrite with AI) calls a function in `src/services/ai/index.ts` that resolves locally after a short simulated delay. To connect a real provider, replace the body of `simulate()` in `src/services/ai/client.ts` with a `fetch` call — every function signature in `src/services/ai/index.ts` stays the same, so no call site needs to change.
