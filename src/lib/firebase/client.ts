@@ -1,7 +1,16 @@
 "use client"
 
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app"
-import { getAuth, GoogleAuthProvider, type Auth } from "firebase/auth"
+import {
+  browserLocalPersistence,
+  browserPopupRedirectResolver,
+  browserSessionPersistence,
+  getAuth,
+  GoogleAuthProvider,
+  indexedDBLocalPersistence,
+  initializeAuth,
+  type Auth,
+} from "firebase/auth"
 import { getFirestore, type Firestore } from "firebase/firestore"
 import { getStorage, type FirebaseStorage } from "firebase/storage"
 
@@ -34,7 +43,21 @@ export function getFirebaseAuth(): Auth | null {
   if (!isFirebaseConfigured) return null
   const firebaseApp = getFirebaseApp()
   if (!firebaseApp) return null
-  if (!authInstance) authInstance = getAuth(firebaseApp)
+  if (!authInstance) {
+    try {
+      // localStorage first: Firebase's IndexedDB persistence refuses writes while the page is
+      // hidden, and Safari hides the opener during signInWithPopup, so the sign-in result can't
+      // be saved ("Database is closing/hidden"). IndexedDB stays in the list so existing
+      // sessions stored there are migrated to localStorage instead of being signed out.
+      authInstance = initializeAuth(firebaseApp, {
+        persistence: [browserLocalPersistence, indexedDBLocalPersistence, browserSessionPersistence],
+        popupRedirectResolver: browserPopupRedirectResolver,
+      })
+    } catch {
+      // Already initialized (e.g. after a hot reload) — reuse the existing instance.
+      authInstance = getAuth(firebaseApp)
+    }
+  }
   return authInstance
 }
 
